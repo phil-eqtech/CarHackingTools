@@ -1,60 +1,69 @@
 #!/bin/bash
+#
 # Ubuntu Car Hacking Workstation Setup
-# TODO: General CLean Up.
+#
+# Install useful apps for Car Hacking
+
 
 set -e
 
 # Setup Tools Directory
-sudo mkdir -p /tools
-sudo chmod -R 0777 /tools
-cd /tools || exit
+TOOL_DIR=~/CarHacking-Tools
+mkdir -p $TOOL_DIR
+cd $TOOL_DIR || exit
+# Clean All
+sudo rm -fr ./*
+
 
 # Add user to dialout so USB-to-Serial Works-ish.
 sudo usermod -a -G dialout "$USER"
 
+
 # Update System
+printf "Updating system"
+printf "\\n"
 sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
 sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
 
-#  Java Fixes
-echo oracle-java10-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
-sudo DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:webupd8team/java
-sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
 
-#Base Package Install (Packages Listed Invidually For Easy Customazation/Trobule Shooting.)
+# Base Package Install (Packages Listed Invidually For Easy Customazation/Trobule Shooting.)
+printf "Instaling base packages"
+printf "\\n"
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y  \
-aircrack-ng \
 ant \
 arduino \
 arduino-core \
 autoconf \
-automake \
-bison \
 blueman \
 bluetooth \
 bluez \
+bluez-test-scripts \
 bluez-tools \
 btscanner \
 build-essential \
 can-utils \
 cpp \
+cython3 \
 cryptsetup \
 curl \
-ess \
-flex \
+g++ \
 gcc \
 git \
 gnuradio \
 gqrx-sdr \
-htop \
-jq \
+libairspy-dev \
 libavcodec-dev \
 libavformat-dev \
 libbluetooth-dev \
 libconfig-dev \
 libgps-dev \
 libgtk-3-dev \
+libhackrf-dev \
+libnetfilter-queue1 \
+libpcap-dev \
 libportmidi-dev \
+libpython3-dev \
+librtlsdr-dev \
 libsdl2-dev \
 libsdl2-image-dev \
 libsdl2-mixer-dev \
@@ -62,52 +71,97 @@ libsdl2-ttf-dev \
 libsqlite3-dev \
 libswscale-dev \
 libtool \
+libuhd-dev \
+libusb-1.0 \
 maven \
-moserial \
-net-tools \
 netbeans \
-npm \
-oracle-java8-installer \
-oracle-java8-set-default \
 python \
+python-bluez \
+python-dbus \
 python-dev \
 python-dev \
 python-pip \
 python-serial \
 python-wxtools \
+python3-numpy \
 python3-pip \
+python3-psutil \
+python3-zmq \
+python3-pyqt5 \
 ruby \
 ruby-dev \
 software-properties-common \
 sqlite \
 tree \
-tree \
 tshark \
-unrar \
+ubertooth \
 unzip \
 wget \
-wireshark \
-zlib1g-dev
+wireshark 
 
-#Python Pip
-python -m pip uninstall pip  # this might need sudo
+#
+# Updating Python Pip
+#
+python -m pip uninstall pip  # this might need sudonpm audit 
 sudo apt install --reinstall python-pip
 
-# Starting Car Hacking Tool Installation
 
+#
+# Adding required PPA
+#
+printf "Updating PPAs"
+printf "\\n"
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - 
+
+
+#
+# Installing tools
+#
 printf "Instaling Tools"
 printf "\\n"
 
+# NodeJS
+sudo apt-get install -y nodejs
+
+# Bettercap
+# Read The Docs: http://www.bettercap.org
+wget https://github.com/bettercap/bettercap/releases/download/v2.19/bettercap_linux_amd64_2.19.zip 
+unzip ./bettercap_linux_amd64_2.19.zip bettercap
+sudo mv ./bettercap /usr/bin/
+rm -fr ./bettercap*
+
+# Bettercap UI
+#git clone https://github.com/bettercap/ui.git ./bettercap-ui
+#cd ./bettercap-ui || exit
+#make build
+#sudo make install
+#cd .. || exit
+#rm -fr ./bettercap-ui || exit
+
+# Updating bettercap
+sudo bettercap -eval "caplets.update; q"
+
+# Universal radio Hacker
+sudo pip3 install urh
+
 # Bluelog
 # Read The Docs: https://github.com/MS3FGX/Bluelog
-git clone https://github.com/MS3FGX/Bluelog.git
-cd Bluelog || exit
+git clone https://github.com/MS3FGX/Bluelog.git ./Bluelog
+cd ./Bluelog || exit
 sudo make install
+cd .. || exit
+
+# BlueHydra
+# Read The Docs: https://github.com/pwnieexpress/blue_hydra
+git clone https://github.com/pwnieexpress/blue_hydra ./blue_hydra
+cd ./blue_hydra || exit
+sudo apt-get install -y ruby-dev bundler
+sudo bundle install
 cd .. || exit
 
 # Can-Utils:
 # Read The Docs: https://github.com/linux-can/can-utils
-# More Reading: # More Reading: https://discuss.cantact.io/t/using-can-utils/24
+# More Reading: https://discuss.cantact.io/t/using-can-utils/24
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y  can-utils
 
 # Canbus-utils
@@ -123,8 +177,8 @@ cd .. || exit
 mkdir -p cantact-app
 cd cantact-app || exit
 wget https://github.com/linklayer/cantact-app/releases/download/v0.3.0-alpha/cantact-v0.3.0-alpha.zip
-sudo unzip cantact-v0.3.0-alpha.zip
-sudo rm cantact-v0.3.0-alpha.zip
+unzip cantact-v0.3.0-alpha.zip
+rm cantact-v0.3.0-alpha.zip
 cd .. || exit
 
 # Caringcaribou
@@ -149,30 +203,38 @@ cd KatyOBD || exit
 sed -i 's/tkinter/Tkinter/g' KatyOBD.py
 cd .. || exit
 
+# socketcand
+# Read The Docs Here: https://dschanoeh.github.io/Kayak/tutorial.html
+git clone http://github.com/dschanoeh/socketcand.git
+cd socketcand || exit
+autoconf
+./configure
+make clean
+make
+sudo make install
+cd ../.. || exit
+
 # Kayak
-# Read The Docs Here: http://kayak.2codeornot2code.org/
-# To Install ./Kayak-1.0-SNAPSHOT-linux.sh --silent
-mkdir -p -p kayak
-cd kayak || exit
-curl http://kayak.2codeornot2code.org/Kayak-1.0-SNAPSHOT-linux.sh > Kayak-1.0-SNAPSHOT-linux.sh
-chmod +x Kayak-1.0-SNAPSHOT-linux.sh
+# Read The Docs Here: https://dschanoeh.github.io/Kayak/
+git clone git://github.com/dschanoeh/Kayak
+cd Kayak || exit
+mvn clean package
 cd .. || exit
 
 # OBD-Monitor
+# Read The Docs Here : https://github.com/dchad/OBD-Monitor
 git clone https://github.com/dchad/OBD-Monitor
 cd OBD-Monitor || exit
-cd src|| exit
+cd src || exit
 make stests
 make server
 make ftests
-cd .. || exit
-cd .. || exit
+cd ../.. || exit
 
 
 # Python-ODB
 # Read The Docs Here: https://python-obd.readthedocs.io/en/latest/
 pip install --user pySerial
-
 git clone https://github.com/brendan-w/python-OBD
 cd python-OBD || exit
 sudo python setup.py install
@@ -180,7 +242,6 @@ cd .. || exit
 
 
 # PyOBD:
-# Fix This!
 # Backup: git clone https://github.com/Pbartek/pyobd-pi.git
 wget http://www.obdtester.com/download/pyobd_0.9.3.tar.gz
 sudo tar -xzvf pyobd_0.9.3.tar.gz
@@ -278,16 +339,6 @@ cd .. || exit
 # Read The Docs Here: https://samhobbs.co.uk/2015/04/scantool-obdii-car-diagnostic-software-linux
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y  scantool
 
-# Socketcand
-# Read The Docs Here: https://github.com/dschanoeh/socketcand
-git clone http://github.com/dschanoeh/socketcand.git
-cd socketcand || exit
-autoconf
-./configure --without-config
- make clean
-make
-sudo make install
-cd .. || exit
 
 # UDSim
 # Read The Docs Here: https://github.com/zombieCraig/UDSim
@@ -295,102 +346,4 @@ git clone https://github.com/zombieCraig/UDSim
 cd UDSim/src || exit
 make
 cd .. || exit
-cd .. || exit
-
-# Make Desktop Icons
-
-printf "Configuring Desktop Icons"
-printf "\\n"
-
-mkdir -p -p icons
-cd icons || exit
-
-cat << EOF > BlueLog.desktop
-[Desktop Entry]
-Name=BlueLog
-Type=Application
-Path=/tools/Bluelog
-Exec=/tools/Bluelog/bluelog
-Icon=/tools/Bluelog/www/images/bluelog_logo.png
-Terminal=true
-Categories=Utility
-StartupNotify=false
-EOF
-
-wget https://carhacking.tools/install/images/cantact.png -O cantact.png
-
-cat << EOF > Cantact.desktop
-[Desktop Entry]
-Name=Cantact
-Type=Application
-Path=/tools/cantact-app/cantact/bin
-Exec=sudo -H /tools/cantact-app/cantact/bin/cantact
-Icon=/tools/icons/cantact.png
-Terminal=true
-Categories=Utility
-StartupNotify=false
-EOF
-
-wget https://carhacking.tools/install/images/icsim.png -O icsim.png
-
-cat << EOF > ICSim.desktop
-[Desktop Entry]
-Name=ICSim
-Type=Application
-Path=/tools/ICSim/
-Exec=/tools/ICSim/icsim vcan0
-Icon=/tools/icons/icsim.png
-Terminal=true
-Categories=Utility
-StartupNotify=false
-EOF
-
-cat << EOF > ICSimControls.desktop
-[Desktop Entry]
-Name=ICSim Controls
-Type=Application
-Path=/tools/ICSim/
-Exec=/tools/ICSim/controls vcan0
-Icon=/tools/icons/icsim.png
-Terminal=true
-Categories=Utility
-StartupNotify=false
-EOF
-
-wget https://carhacking.tools/install/images/kayak.png -O kayak.png
-
-cat << EOF > KayakInstall.desktop
-[Desktop Entry]
-Name=Kayak Install
-Type=Application
-Path=/tools/kayak
-Exec=/tools/kayak/Kayak-1.0-SNAPSHOT-linux.sh
-Icon=/tools/icons/kayak.png
-Terminal=true
-Categories=Utility
-StartupNotify=false
-EOF
-
-wget https://carhacking.tools/install/images/KatyOBD.png -O KatyOBD.png
-
-cat << EOF > KatyOBD.desktop
-[Desktop Entry]
-Name=KatyOBD
-Type=Application
-Path=/tools/KatyOBD
-Exec=sudo -H python KatyOBD.py
-Icon=/tools/icons/KatyOBD.png
-Terminal=true
-Categories=Utility
-StartupNotify=false
-EOF
-
-sudo rm ~/Desktop/SavvyCAN.desktop
-sleep 15
-sudo chmod 755 ./*.desktop
-cp ./*.desktop ~/.local/share/applications
-cd .. || exit
-
-cd ~/.local/share/applications || exit
-sudo chmod 755 ./*.desktop
 cd .. || exit
