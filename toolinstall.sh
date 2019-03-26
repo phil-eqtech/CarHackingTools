@@ -50,7 +50,6 @@ g++ \
 gcc \
 git \
 gnuradio \
-gqrx-sdr \
 libairspy-dev \
 libavcodec-dev \
 libavformat-dev \
