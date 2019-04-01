@@ -523,6 +523,16 @@ else
   echo -e "\033[32m[Already installed]\033[00m - Skipping"
 fi
 
+# Atom
+echo -en "\n$SPACER\n- Atom : "
+if ! [ -x "$(command -v atom)" ]; then
+  echo -e "\033[33m[Missing]\033[00m - starting installation :"
+  sudo apt install atom -y
+  echo -e "Atom : \033[32m[Installed]\033[00m"
+else
+  echo -e "\033[32m[Already installed]\033[00m - Skipping"
+fi
+
 # IDA Pro
 echo -en "\n$SPACER\n- IDA : "
 if ! [ -f "idafree70_linux.run" ]; then
