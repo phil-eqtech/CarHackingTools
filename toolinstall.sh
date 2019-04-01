@@ -10,7 +10,7 @@ DBLSPACER="\033[32m=========================================================\033
 set -e
 
 # Setup Tools Directory
-TOOL_DIR=~/CarHacking-Tools
+TOOL_DIR=~/CarHackingTools
 echo -e "\n\n\033[32m1- CREATING TOOL DIRECTORY\n$DBLSPACER"
 if ! [ -d $TOOL_DIR ]; then
   mkdir -p $TOOL_DIR
@@ -47,6 +47,7 @@ bluez-tools \
 btscanner \
 build-essential \
 can-utils \
+cmake \
 cpp \
 cython3 \
 cryptsetup \
@@ -59,14 +60,19 @@ libairspy-dev \
 libavcodec-dev \
 libavformat-dev \
 libbluetooth-dev \
+libboost-dev \
+libcapstone-dev \
 libconfig-dev \
 libgps-dev \
+libgraphviz-dev \
 libgtk-3-dev \
 libhackrf-dev \
 libnetfilter-queue1 \
 libpcap-dev \
 libportmidi-dev \
 libpython3-dev \
+libqt5svg5-dev \
+libqt5xmlpatterns5-dev \
 librtlsdr-dev \
 libsdl2-dev \
 libsdl2-image-dev \
@@ -80,6 +86,7 @@ libusb-1.0 \
 maven \
 netbeans \
 net-tools \
+pkg-config \
 python \
 python-bluez \
 python-dbus \
@@ -93,6 +100,8 @@ python3-pip \
 python3-psutil \
 python3-zmq \
 python3-pyqt5 \
+qtbase5-dev \
+qt5-default \
 ruby \
 ruby-dev \
 scantool \
@@ -322,15 +331,13 @@ else
   echo -e "\033[32m[Already installed]\033[00m - Skipping"
 fi
 
-# Kayak
+# Kayak !!! TO-FIX !!!
 # Read The Docs Here: https://dschanoeh.github.io/Kayak/
 echo -en "\n$SPACER\n- Kayak : "
 if ! [ -d "Kayak" ]; then
   echo -e "\033[33m[Missing]\033[00m - starting installation :"
-  git clone git://github.com/dschanoeh/Kayak
-  cd Kayak || exit
-  mvn clean package
-  cd .. || exit
+  wget https://github.com/dschanoeh/Kayak/releases/download/1.0-SNAPSHOT/Kayak-1.0-SNAPSHOT.zip
+  unzip Kayak-1.0-SNAPSHOT.zip Kayak
   echo -e "Kayak : \033[32m[Installed]\033[00m"
 else
   echo -e "\033[32m[Already installed]\033[00m - Skipping"
@@ -376,6 +383,7 @@ fi
 echo -en "\n$SPACER\n- QT : "
 if ! [ -d "QT" ]; then
   mkdir -p QT
+  sudo rm -fr /opt/QT
   cd QT || exit
 cat << EOF > qt-noninteractive-install-linux.qs
 function Controller() {
@@ -489,6 +497,7 @@ echo -en "\n$SPACER\n- edb-debugger : "
 if ! [ -d "edb-debugger" ]; then
   echo -e "\033[33m[Missing]\033[00m - starting installation :"
   git clone --recursive https://github.com/eteran/edb-debugger.git
+  cd edb-debugger
   mkdir build
   cd build
   cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ ..
@@ -510,6 +519,18 @@ if ! [ -d "ghidra_9.0.1" ]; then
   sudo ln -s $TOOL_DIR/ghidra_9.0.1/ghidraRun /usr/bin/ghidra
   rm ghidra_9.0.1_PUBLIC_20190325.zip
   echo -e "Ghidra : \033[32m[Installed]\033[00m"
+else
+  echo -e "\033[32m[Already installed]\033[00m - Skipping"
+fi
+
+# IDA Pro
+echo -en "\n$SPACER\n- IDA : "
+if ! [ -f "idafree70_linux.run" ]; then
+  echo -e "\033[33m[Missing]\033[00m - starting installation :"
+  wget https://out7.hex-rays.com/files/idafree70_linux.run
+  chmod +x idafree70_linux.run
+  ./idafree70_linux.run
+  echo -e "IDA : \033[32m[Installed]\033[00m"
 else
   echo -e "\033[32m[Already installed]\033[00m - Skipping"
 fi

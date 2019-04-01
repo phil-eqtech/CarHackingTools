@@ -5,13 +5,7 @@
 # General Clean Up.
 set -e
 
-# Set Install Dir Beacon
-installdir=$(pwd)
-
-# Setup Tools Directory
-sudo mkdir -p /tools
-sudo chmod -R 0777 /tools
-cd /tools || exit
+./toolinstall.sh
 
 # Set Background Images
 mkdir -p images
@@ -42,7 +36,3 @@ gsettings set org.gtk.Settings.FileChooser sort-directories-first true
 
 #Disable Power Managment
 sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
-
-#Running The Tool Install script
-cd "$installdir"
-./toolinstall.sh
