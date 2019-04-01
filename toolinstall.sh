@@ -250,7 +250,6 @@ if ! [ -d "cantact-app" ]; then
   wget https://github.com/linklayer/cantact-app/releases/download/v0.3.0-alpha/cantact-v0.3.0-alpha.zip
   unzip cantact-v0.3.0-alpha.zip
   rm cantact-v0.3.0-alpha.zip
-  cd .. || exit
   echo -e "Cantact-app : \033[32m[Installed]\033[00m"
 else
   echo -e "\033[32m[Already installed]\033[00m - Skipping"
@@ -317,7 +316,7 @@ if ! [ -d "socketcand" ]; then
   make clean
   make
   sudo make install
-  cd ../.. || exit
+  cd .. || exit
   echo -e "Socketcand : \033[32m[OK]\033[00m"
 else
   echo -e "\033[32m[Already installed]\033[00m - Skipping"
@@ -478,7 +477,7 @@ if ! [ -d "UDSim" ]; then
   git clone https://github.com/zombieCraig/UDSim
   cd UDSim/src || exit
   make
-  cd .. || exit
+  cd ../.. || exit
   echo -e "UDSim : \033[32m[Installed]\033[00m"
 else
   echo -e "\033[32m[Already installed]\033[00m - Skipping"
@@ -495,14 +494,13 @@ if ! [ -d "edb-debugger" ]; then
   cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ ..
   make
   sudo make install
-  cd .. || exit
+  cd ../.. || exit
   echo -e "edb-debugger : \033[32m[Installed]\033[00m"
 else
   echo -e "\033[32m[Already installed]\033[00m - Skipping"
 fi
 
 # Ghidra
-# Read The Docs Here: https://github.com/eteran/edb-debugger
 echo -en "\n$SPACER\n- Ghidra : "
 if ! [ -d "ghidra_9.0.1" ]; then
   echo -e "\033[33m[Missing]\033[00m - starting installation :"
